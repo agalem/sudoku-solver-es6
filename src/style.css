@@ -1,0 +1,22 @@
+.box {
+    border: 2px solid #000;
+}
+
+.number_box {
+    border: 1px solid #000;
+    width: 40px;
+}
+
+.number_box input {
+    width: 33px;
+}
+
+.box--row {
+    display: flex;
+    flex-direction: row;
+}
+
+.number_box--row {
+    display: flex;
+    flex-direction: row;
+}
