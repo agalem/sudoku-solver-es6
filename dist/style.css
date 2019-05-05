@@ -1,0 +1,1 @@
+.box{border:2px solid #000}.number_box{border:1px solid #000;width:40px}.number_box input{width:33px}.box--row,.number_box--row{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:horizontal;-webkit-box-direction:normal;-ms-flex-direction:row;flex-direction:row}
