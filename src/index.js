@@ -1,13 +1,13 @@
 const sudokuGrid = [
-    [8,9,0,7,4,2,1,3,6],
+    [8,9,0,7,0,0,1,0,6],
     [2,7,1,9,6,3,4,0,5],
-    [4,6,3,5,8,1,7,9,2],
-    [9,0,4,6,1,7,2,5,8],
-    [5,1,7,2,3,8,9,6,4],
-    [6,8,2,4,5,9,3,7,1],
+    [0,6,3,5,0,1,0,9,2],
+    [0,0,0,6,1,7,2,0,8],
+    [0,1,7,2,0,8,9,6,4],
+    [0,8,0,4,5,9,3,7,1],
     [1,5,9,8,0,4,6,2,3],
-    [7,4,6,3,2,5,8,1,9],
-    [3,2,8,1,9,6,5,4,7]
+    [7,4,6,3,2,0,8,1,9],
+    [3,2,0,1,0,0,5,4,7]
 ];
 
 /*
@@ -21,8 +21,6 @@ const sudokuGrid = [
     [7,4,6,3,2,5,8,1,9],
     [3,2,8,1,9,6,5,4,7]
  */
-
-
 
 global.handleChange = () => {
     const value = Number(event.target.value);
@@ -39,25 +37,10 @@ global.handleChange = () => {
 
 global.handleClick = () => {
     event.preventDefault();
-
-    const searchedIndexes = [];
-
-    sudokuGrid.map((row, i) => {
-        row.map((elem, j) => {
-            if(elem === 0) {
-                const temp = [i, j];
-                searchedIndexes.push(temp);
-            }
-        })
-    });
-
-    console.log(solve(sudokuGrid, searchedIndexes));
-    // if(solve(sudokuGrid)) {
-    //     console.log(sudokuGrid);
-    // } else {
-    //     console.log('No solution');
-    // }
+    solve(sudokuGrid);
 };
+
+
 
 const updateGrid = (grid, row, col, num) => {
     return grid[row][col] = num;
@@ -88,24 +71,24 @@ const presentInCol = (grid, col, num) => {
 const presentInBox = (grid, boxStartRow, boxStartCol, num) => {
 
     let minCol, maxCol, minRow, maxRow;
-    if(boxStartCol >= 1 && boxStartCol <=3) {
+    if(boxStartCol >= 0 && boxStartCol <=2) {
         minCol = 0;
         maxCol = 2;
-    } else if (boxStartCol >= 4 && boxStartCol <= 6) {
+    } else if (boxStartCol >= 3 && boxStartCol <= 5) {
         minCol = 3;
         maxCol = 5;
-    } else if (boxStartCol >= 7 && boxStartCol <= 9) {
+    } else if (boxStartCol >= 6 && boxStartCol <= 8) {
         minCol = 6;
         maxCol = 8;
     }
 
-    if(boxStartRow >= 1 && boxStartRow <=3) {
+    if(boxStartRow >= 0 && boxStartRow <=2) {
         minRow = 0;
         maxRow = 2;
-    } else if (boxStartRow >= 4 && boxStartRow <= 6) {
+    } else if (boxStartRow >= 3 && boxStartRow <= 5) {
         minRow = 3;
         maxRow = 5;
-    } else if (boxStartRow >= 7 && boxStartRow <= 9) {
+    } else if (boxStartRow >= 6 && boxStartRow <= 8) {
         minRow = 6;
         maxRow = 8;
     }
@@ -124,43 +107,83 @@ const canBeInsert = (grid, row, col, num) => {
     return (!presentInCol(grid, col, num) && !presentInRow(grid, row, num) && !presentInBox(grid, row, col, num));
 };
 
-const getEmptyLocation = grid => {
+const getEmptyLocations = grid => {
+    const emptyLocations = [];
    for(let row = 0; row < grid.length; row++) {
        for(let col = 0; col < grid.length; col++) {
            if(grid[row][col] === 0) {
-               return ((row + 1)*10) + (col + 1);
+               //return ((row + 1)*10) + (col + 1);
+               emptyLocations.push([row, col]);
            }
        }
    }
-   return 0;
+   return emptyLocations;
 };
 
+const testValues = (grid, index) => {
+  if(index >= grid.length) {
+      return true;
+  } else if (grid[index] !== 0) {
+      return testValues(grid, index + 1);
+  }
 
-const solve = (grid, searchedPos) => {
+  for(let i=1; i<=9; i++) {
+      if(canBeInsert(grid, Math.floor(index / 9), index % 9, i)) {
+          grid[index] = i;
+          if(testValues(grid, index + 1)) {
+              return true;
+          }
+      }
+  }
 
-    const limit = 9;
+  grid[index] = 0;
+  return false;
+};
 
-    //first version -> takes to long
-    //to be updated
+const findPossibleValues = (grid, emptyLocations) => {
+    const possibleValues = [];
+    for(let i=0; i<emptyLocations.length; i++) {
+        const temp = [];
+        const row = emptyLocations[i][0];
+        const col = emptyLocations[i][1];
 
-    // for(let i=0; i<searchedPos.length;) {
-    //     const row = searchedPos[i][0];
-    //     const col = searchedPos[i][1];
+        for(let val = 1; val <= 9; val ++) {
+            if(row === 0 && col === 2) {
+                console.log(val);
+                console.log(canBeInsert(grid, row, col, val));
+            }
+            if(canBeInsert(grid, row, col, val)) {
+                temp.push(val);
+                console.log(temp);
+            }
+        }
+        possibleValues.push(temp);
+    }
+    return possibleValues;
+};
+
+const solve = (grid) => {
+    const emptyLocations = getEmptyLocations(grid);
+    const possibleValues = findPossibleValues(grid, emptyLocations);
+
+
+    // for(let i=0; i<possibleValues.length; i++) {
+    //     const row = emptyLocations[i][0];
+    //     const col = emptyLocations[i][1];
     //
-    //     let val = 1;
-    //     let found = false;
-    //
-    //     while(!found && val <= limit) {
-    //         if(canBeInsert(grid, row, col, val)) {
-    //             found = true;
-    //             grid[row][col] = val;
-    //             i++;
-    //         } else {
-    //             val++;
-    //         }
+    //     if(possibleValues[i].length === 1) {
+    //         grid[row][col] = possibleValues[i][0];
+    //         debugger;
+    //     } else if (possibleValues[i].length > 1) {
+    //         grid[row][col] = possibleValues[i][0];
+    //         possibleValues[i] = [possibleValues[i][0]];
+    //         debugger;
+    //     } else {
+    //         console.log("Sudoku cannot be solved");
     //     }
     // }
-
-    return grid;
-
+    //
+    // console.log(grid);
+    // console.log(emptyLocations);
+    // console.log(possibleValues);
 };
