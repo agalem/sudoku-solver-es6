@@ -1,13 +1,13 @@
 const sudokuGrid = [
-    [8,9,0,7,0,0,1,0,6],
-    [2,7,1,9,6,3,4,0,5],
-    [0,6,3,5,0,1,0,9,2],
-    [0,0,0,6,1,7,2,0,8],
-    [0,1,7,2,0,8,9,6,4],
-    [0,8,0,4,5,9,3,7,1],
-    [1,5,9,8,0,4,6,2,3],
-    [7,4,6,3,2,0,8,1,9],
-    [3,2,0,1,0,0,5,4,7]
+    [8,9,5,7,4,0,1,3,6],
+    [2,0,1,9,6,0,4,8,5],
+    [4,0,3,5,8,0,7,9,2],
+    [9,0,4,6,1,0,2,0,8],
+    [5,0,7,0,3,0,9,0,4],
+    [6,8,2,0,5,9,3,0,1],
+    [1,5,9,0,7,4,6,0,3],
+    [7,4,6,0,2,5,8,0,9],
+    [3,2,8,1,9,6,5,0,7]
 ];
 
 /*
@@ -37,7 +37,7 @@ global.handleChange = () => {
 
 global.handleClick = () => {
     event.preventDefault();
-    solve(sudokuGrid);
+    console.log(solve(sudokuGrid));
 };
 
 
@@ -148,13 +148,8 @@ const findPossibleValues = (grid, emptyLocations) => {
         const col = emptyLocations[i][1];
 
         for(let val = 1; val <= 9; val ++) {
-            if(row === 0 && col === 2) {
-                console.log(val);
-                console.log(canBeInsert(grid, row, col, val));
-            }
             if(canBeInsert(grid, row, col, val)) {
                 temp.push(val);
-                console.log(temp);
             }
         }
         possibleValues.push(temp);
@@ -163,27 +158,28 @@ const findPossibleValues = (grid, emptyLocations) => {
 };
 
 const solve = (grid) => {
-    const emptyLocations = getEmptyLocations(grid);
-    const possibleValues = findPossibleValues(grid, emptyLocations);
+    let emptyLocations = getEmptyLocations(grid);
+    let possibleValues = findPossibleValues(grid, emptyLocations);
 
+    for (let i = 0; i < emptyLocations.length; i++) {
+        const row = emptyLocations[i][0];
+        const col = emptyLocations[i][1];
+        if (possibleValues[i].length === 1) {
+            grid[row][col] = possibleValues[i][0];
+            return solve(grid);
+        }
+    }
+    if (possibleValues.map(elem => elem.length !== 1)) {
+        for (let i = 0; i < emptyLocations.length; i++) {
+            const row = emptyLocations[i][0];
+            const col = emptyLocations[i][1];
 
-    // for(let i=0; i<possibleValues.length; i++) {
-    //     const row = emptyLocations[i][0];
-    //     const col = emptyLocations[i][1];
-    //
-    //     if(possibleValues[i].length === 1) {
-    //         grid[row][col] = possibleValues[i][0];
-    //         debugger;
-    //     } else if (possibleValues[i].length > 1) {
-    //         grid[row][col] = possibleValues[i][0];
-    //         possibleValues[i] = [possibleValues[i][0]];
-    //         debugger;
-    //     } else {
-    //         console.log("Sudoku cannot be solved");
-    //     }
-    // }
-    //
-    // console.log(grid);
-    // console.log(emptyLocations);
-    // console.log(possibleValues);
+            for (let j = 0; j < possibleValues[i].length; j++) {
+                updateGrid(grid, row, col, possibleValues[i][j]);
+                return solve(grid);
+            }
+        }
+
+    }
+    return grid;
 };
