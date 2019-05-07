@@ -5,6 +5,7 @@
 .number_box {
     border: 1px solid #000;
     width: 40px;
+    height: 40px;
 }
 
 .number_box input {

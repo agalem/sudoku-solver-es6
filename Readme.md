@@ -41,10 +41,6 @@ from the project folder.
 ## Contributing
 ...
 
-## Authors
-
-* **Aga Lempaszek** - *Initial work* - [agalem](https://github.com/agalem)
-
 ## License
 
 This project is licensed under the MIT License.
