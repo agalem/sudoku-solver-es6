@@ -8,8 +8,36 @@
     height: 40px;
 }
 
+.number_box label {
+    visibility: hidden;
+    position: absolute;
+}
+
 .number_box input {
-    width: 33px;
+    width: 35px;
+    height: 35px;
+    font-size: 20px;
+}
+
+.number_box span {
+    display: block;
+    width: 35px;
+    height: 35px;
+    line-height: 35px;
+    text-align: center;
+    font-size: 20px;
+}
+
+.input--succ {
+    background-color: rgba(0, 255, 0, 0.7);
+}
+
+.input--err {
+    background-color: rgba(255, 0, 0, 0.7);
+}
+
+.input--given {
+    background-color: rgba(0,0,0, 0.15);
 }
 
 .box--row {
@@ -20,4 +48,8 @@
 .number_box--row {
     display: flex;
     flex-direction: row;
+}
+
+.hidden {
+    display: none;
 }

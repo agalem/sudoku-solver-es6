@@ -1,32 +1,133 @@
-const sudokuGrid = [
-    [0,0,0,6,0,7,0,8,5],
-    [0,0,0,0,0,0,6,0,0],
-    [0,0,7,0,0,0,0,0,0],
-    [0,5,0,0,0,3,0,0,4],
-    [3,7,0,0,0,8,0,0,0],
-    [6,0,0,2,0,0,0,0,0],
-    [8,0,0,0,0,0,3,1,0],
-    [0,3,1,0,4,9,0,0,0],
-    [0,0,0,0,0,0,0,0,9]
+const emptySudokuGrid = [
+    [0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0]
 ];
+
+window.errorFields = [];
+
+let sudokuGrid = emptySudokuGrid.slice(0);
+for (let i = 0, len = emptySudokuGrid.length; i < len; i++) {
+    sudokuGrid[i] = emptySudokuGrid[i].slice();
+}
+
+window.isInputBoardVisible = true;
 
 global.handleChange = () => {
     const value = Number(event.target.value);
-    if(isInRange(value, 1, 9)) {
-        const id = Number(event.target.id);
-        const column = id % 10;
-        const row = (id - column) / 10;
+    const id = Number(event.target.id);
+    const column = id % 10;
+    const row = (id - column) / 10;
+    const startingBoxRow = 3 * Math.floor(row / 3);
+    const startingBoxCol = 3 * Math.floor(column / 3);
+    const checkingCell = [row, column, startingBoxRow, startingBoxCol];
 
-        updateGrid(sudokuGrid, row, column, value);
+    removeWarningBg(row, column);
+
+    if(value === 0) {
+        updateGrid(sudokuGrid, row, column, 0);
+        document.getElementById(id).value = '';
     } else {
-        console.log('Value out of range');
-
+        if(isInRange(value, 1, 9) && canBeInsert(sudokuGrid, checkingCell, value)) {
+            for(let i=0; i<window.errorFields.length; i++) {
+                if(errorFields[i] === id) {
+                    window.errorFields.splice(i, 1);
+                }
+            }
+            addSuccessBg(row, column);
+            updateGrid(sudokuGrid, row, column, value);
+        } else {
+            errorFields.push(id);
+            addWarningBg(row, column);
+            updateGrid(sudokuGrid, row, column, 0);
+            console.log(sudokuGrid);
+            console.log('Value out of range');
+        }
     }
+};
+
+global.handleClear = () => {
+    event.preventDefault();
+    sudokuGrid = emptySudokuGrid;
+    replaceBoard(window.isInputBoardVisible);
+    clearInputs();
+    debugger;
+};
+
+const clearInputs = () => {
+    const inputs = document.getElementsByTagName("input");
+    for(let i=0; i<inputs.length; i++) {
+        inputs[i].value = "";
+    }
+    console.log(emptySudokuGrid);
+};
+
+const removeWarningBg = (row, column) => {
+    const id = `${row}${column}`;
+    const element = document.getElementById(id);
+    const sElement = document.getElementById("s" + id).parentElement;
+    if(element.classList.contains("input--err")) {
+        element.classList.remove("input--err");
+    }
+    if(element.classList.contains("input--succ")) {
+        element.classList.remove("input--succ");
+    }
+    if(sElement.classList.contains("input--given")) {
+        sElement.classList.remove("input--given");
+    }
+};
+
+const addSuccessBg = (row, column) => {
+    const id = `${row}${column}`;
+    const sID = "s" + id;
+    document.getElementById(id).className = "input--succ";
+    document.getElementById(sID).parentElement.className += " input--given";
+};
+
+const addWarningBg = (row, column) => {
+    const id = `${row}${column}`;
+    document.getElementById(id).className = "input--err";
 };
 
 global.handleClick = () => {
     event.preventDefault();
-    console.log(solve(sudokuGrid));
+    if(errorFields.length === 0) {
+        replaceBoard(isInputBoardVisible);
+        putElementsOnBoard(solve(sudokuGrid));
+    } else {
+        console.log("Fix errors first");
+    }
+};
+
+const putElementsOnBoard = grid => {
+    for(let row = 0; row < grid.length; row++) {
+        for(let col = 0; col < grid[row].length; col++) {
+            const id = `s${row}${col}`;
+            document.getElementById(id).innerText = grid[row][col];
+        }
+    }
+};
+
+
+const replaceBoard = isInputBoardVisible => {
+    const inputBoardId = "container";
+    const solvedBoardId = "container-solved";
+    const inputBoard = document.getElementById(inputBoardId);
+    const solvedBoard = document.getElementById(solvedBoardId);
+    if(isInputBoardVisible) {
+        inputBoard.classList.add("hidden");
+        solvedBoard.classList.remove("hidden");
+    } else {
+        inputBoard.classList.remove("hidden");
+        solvedBoard.classList.add("hidden");
+    }
+    window.isInputBoardVisible = !isInputBoardVisible;
 };
 
 const updateGrid = (grid, row, col, num) => {
@@ -116,3 +217,9 @@ const solve = grid => {
     return grid;
 };
 
+// var t0 = Date.now();
+// solve(board);
+// var t1 = Date.now();
+// console.log( " in " + (t1-t0) + "ms");
+// console.log( board.map( row=> row.join(',')).join('\n'));
+// console.log( "\n solved in " + (t1-t0) + "ms");
