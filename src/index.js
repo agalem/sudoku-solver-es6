@@ -12,7 +12,7 @@ const emptySudokuGrid = [
 
 window.errorFields = [];
 
-let sudokuGrid = emptySudokuGrid.slice(0);
+const sudokuGrid = emptySudokuGrid.slice(0);
 for (let i = 0, len = emptySudokuGrid.length; i < len; i++) {
     sudokuGrid[i] = emptySudokuGrid[i].slice();
 }
@@ -46,18 +46,20 @@ global.handleChange = () => {
             errorFields.push(id);
             addWarningBg(row, column);
             updateGrid(sudokuGrid, row, column, 0);
-            console.log(sudokuGrid);
-            console.log('Value out of range');
         }
     }
 };
 
 global.handleClear = () => {
     event.preventDefault();
-    sudokuGrid = emptySudokuGrid;
+    for (let i = 0, len = emptySudokuGrid.length; i < len; i++) {
+        sudokuGrid[i] = emptySudokuGrid[i].slice();
+        for(let j=0; j<emptySudokuGrid[i].length; j++) {
+            removeWarningBg(i, j);
+        }
+    }
     replaceBoard(window.isInputBoardVisible);
     clearInputs();
-    debugger;
 };
 
 const clearInputs = () => {
@@ -65,12 +67,11 @@ const clearInputs = () => {
     for(let i=0; i<inputs.length; i++) {
         inputs[i].value = "";
     }
-    console.log(emptySudokuGrid);
 };
 
 const removeWarningBg = (row, column) => {
     const id = `${row}${column}`;
-    const element = document.getElementById(id);
+    const element = document.getElementById(id).parentElement;
     const sElement = document.getElementById("s" + id).parentElement;
     if(element.classList.contains("input--err")) {
         element.classList.remove("input--err");
@@ -86,22 +87,29 @@ const removeWarningBg = (row, column) => {
 const addSuccessBg = (row, column) => {
     const id = `${row}${column}`;
     const sID = "s" + id;
-    document.getElementById(id).className = "input--succ";
-    document.getElementById(sID).parentElement.className += " input--given";
+    document.getElementById(id).parentElement.classList.add("input--succ");
+    document.getElementById(sID).parentElement.classList.add("input--given");
 };
 
 const addWarningBg = (row, column) => {
     const id = `${row}${column}`;
-    document.getElementById(id).className = "input--err";
+    document.getElementById(id).parentElement.classList.add("input--err");
 };
 
 global.handleClick = () => {
     event.preventDefault();
+    const alert = document.getElementById("alert");
     if(errorFields.length === 0) {
         replaceBoard(isInputBoardVisible);
         putElementsOnBoard(solve(sudokuGrid));
+        if(!alert.classList.contains("hidden")) {
+            alert.classList.add("hidden");
+        }
     } else {
-        console.log("Fix errors first");
+        if(alert.classList.contains("hidden")) {
+            alert.classList.remove("hidden");
+            alert.innerText = "You gave invalid values. Fix values in red fields.";
+        }
     }
 };
 
@@ -210,16 +218,13 @@ const solve = grid => {
             }
             grid[row][col] = 0;
             if (i === 0) {
-                console.log("Sudoku cannot be solved");
+                const alert = document.getElementById("alert");
+                if(alert.classList.contains("hidden")) {
+                    alert.classList.remove("hidden");
+                    alert.innerText = "Sudoku cannot be solved";
+                }
             }
             i--;
         }
     return grid;
 };
-
-// var t0 = Date.now();
-// solve(board);
-// var t1 = Date.now();
-// console.log( " in " + (t1-t0) + "ms");
-// console.log( board.map( row=> row.join(',')).join('\n'));
-// console.log( "\n solved in " + (t1-t0) + "ms");
