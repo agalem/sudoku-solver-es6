@@ -108,7 +108,7 @@ global.handleClick = () => {
     } else {
         if(alert.classList.contains("hidden")) {
             alert.classList.remove("hidden");
-            alert.innerText = "You gave invalid values. Fix values in red fields.";
+            alert.innerText = "Invalid values detected. Fix values in the red fields.";
         }
     }
 };

@@ -96,5 +96,8 @@ gulp.task('watch', (done) => {
 
 
 const watch = gulp.parallel(watchFiles, browserSync);
+const build = gulp.parallel(styles, html, scripts);
 
 gulp.task('default', watch);
+
+gulp.task('build', build);
