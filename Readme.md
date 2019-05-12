@@ -1,6 +1,6 @@
 # Sudoku solver
 
-Sudoku solver implemented in JavaScript. Project in progress.
+Sudoku solver implemented in Vanilla JavaScript.
 
 ## Getting Started
 
