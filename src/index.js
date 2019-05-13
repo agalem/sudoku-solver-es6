@@ -43,7 +43,9 @@ global.handleChange = () => {
             addSuccessBg(row, column);
             updateGrid(sudokuGrid, row, column, value);
         } else {
-            errorFields.push(id);
+            if(errorFields.indexOf(id) === -1) {
+                errorFields.push(id);
+            }
             addWarningBg(row, column);
             updateGrid(sudokuGrid, row, column, 0);
         }
@@ -72,7 +74,7 @@ const clearInputs = () => {
 const removeWarningBg = (row, column) => {
     const id = `${row}${column}`;
     const element = document.getElementById(id).parentElement;
-    const sElement = document.getElementById("s" + id).parentElement;
+    const sElement = document.getElementById("s" + id);
     if(element.classList.contains("input--err")) {
         element.classList.remove("input--err");
     }
@@ -88,7 +90,7 @@ const addSuccessBg = (row, column) => {
     const id = `${row}${column}`;
     const sID = "s" + id;
     document.getElementById(id).parentElement.classList.add("input--succ");
-    document.getElementById(sID).parentElement.classList.add("input--given");
+    document.getElementById(sID).classList.add("input--given");
 };
 
 const addWarningBg = (row, column) => {
