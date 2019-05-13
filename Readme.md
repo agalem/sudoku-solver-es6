@@ -1,6 +1,8 @@
 # Sudoku solver
 
-Sudoku solver implemented in JavaScript. Project in progress.
+Sudoku solver implemented in Vanilla JavaScript.
+
+Live demo: https://agalem.github.io/sudoku-solver-es6/
 
 ## Getting Started
 
